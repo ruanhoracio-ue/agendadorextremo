@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowRight, CheckCircle, FilmStrip, Plugs, Plus, WarningCircle } from '@phosphor-icons/react'
+import { ArrowRight, CheckCircle, FilmStrip, Plugs, Plus, Repeat, TrendDown, TrendUp, WarningCircle } from '@phosphor-icons/react'
 import { Badge, Button, Card, Heading, MetricCard, SegmentedControl, Table, Text } from '../components/ui'
 import { Faixa, Carregando } from '../components/app/Avisos'
 import { IconeRede, RedesDoPost } from '../components/app/IconeRede'
@@ -8,6 +8,7 @@ import { Compositor } from '../components/app/Compositor'
 import { api } from '../lib/api'
 import { useApp } from '../lib/contexto'
 import { useDados } from '../lib/useDados'
+import { analisarSemana } from '../lib/analista'
 import { REDES, rede, status } from '../lib/redes'
 import { diaNoFuso, hojeNoFuso, somarDias, dataHoraLegivel, haQuanto } from '../lib/datas'
 import { inteiro, numero, percentual } from '../lib/formato'
@@ -75,6 +76,10 @@ export default function Dashboard() {
     }))
   }, [atuais])
 
+  // O analista olha sempre os últimos 7 dias contra os 7 anteriores, seja
+  // qual for o período escolhido (o pedido de métricas cobre pelo menos 14).
+  const analise = useMemo(() => analisarSemana(metricas.dados?.posts || [], { hoje, fuso }), [metricas.dados, hoje, fuso])
+
   const contasSeguidores = seguidores.dados?.contas || []
   const totalSeguidores = contasSeguidores.reduce((t, c) => t + (c.atual || 0), 0)
   const ganho = contasSeguidores.reduce((t, c) => t + (c.crescimento || 0), 0)
@@ -121,6 +126,21 @@ export default function Dashboard() {
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-busy={metricas.carregando}>
         {cartoes.map(c => <MetricCard key={c.label} {...c} className={metricas.carregando ? 'opacity-60' : undefined} />)}
       </section>
+
+      {/* ANALISTA DA SEMANA */}
+      <Card>
+        <Titulo>Analista da semana</Titulo>
+        <Text size="sm" tone="mute" className="mt-1">Últimos 7 dias contra os 7 anteriores, lido direto dos números dos posts.</Text>
+        {metricas.carregando && !metricas.dados ? <Carregando /> : !analise ? (
+          <Nada>Ainda não há posts publicados nas duas últimas semanas para analisar.</Nada>
+        ) : (
+          <div className="mt-4 grid gap-6 lg:grid-cols-3">
+            <Leitura icone={<TrendUp size={16} className="text-emerald-deep" />} titulo="O que funcionou" frases={analise.funcionou} />
+            <Leitura icone={<TrendDown size={16} className="text-danger" />} titulo="O que caiu" frases={analise.caiu} />
+            <Leitura icone={<Repeat size={16} className="text-info-deep" />} titulo="O que repetir" frases={analise.repetir} />
+          </div>
+        )}
+      </Card>
 
       {/* GRÁFICO + ATENÇÃO */}
       <div className="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
@@ -272,7 +292,7 @@ export default function Dashboard() {
           ) : (
             <>
               <p className="mt-1 text-body-sm text-mute">
-                {inteiro(contas.length)} {contas.length === 1 ? 'conta' : 'contas'} em {redesConectadas.length} {redesConectadas.length === 1 ? 'rede' : 'redes'}, de {Object.keys(REDES).length} disponíveis.
+                {inteiro(contas.length)} {contas.length === 1 ? 'conta' : 'contas'} em {redesConectadas.length} {redesConectadas.length === 1 ? 'conexão' : 'conexões'}, de {Object.keys(REDES).length} que o Zernio oferece.
               </p>
               <ul className="mt-2 flex flex-col divide-y divide-hairline">
                 {contas.slice(0, 5).map(c => (
@@ -346,6 +366,21 @@ function Linha({ icone, titulo, detalhe, fim, onClick }) {
         {fim}
       </button>
     </li>
+  )
+}
+
+function Leitura({ icone, titulo, frases }) {
+  return (
+    <div>
+      <p className="flex items-center gap-2 text-label-lg text-ink">{icone}{titulo}</p>
+      {frases.length === 0 ? (
+        <p className="mt-2 text-body-sm text-faint">Nada de destaque nesta semana.</p>
+      ) : (
+        <ul className="mt-2 flex flex-col gap-2">
+          {frases.map(f => <li key={f} className="text-body-sm text-body">{f}</li>)}
+        </ul>
+      )}
+    </div>
   )
 }
 

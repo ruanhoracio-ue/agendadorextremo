@@ -4,6 +4,7 @@ import { Container, Breadcrumbs, Logo, SidebarNav, ThemeToggle, Button } from '.
 import { Toasts, Faixa, Carregando } from './components/app/Avisos'
 import { Contexto } from './lib/contexto'
 import { api } from './lib/api'
+import { publica } from './lib/redes'
 import { useDados } from './lib/useDados'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -136,6 +137,8 @@ function Shell({ estado, recarregarEstado }) {
     recarregarEstado,
     fuso: estado.fuso,
     contas: contas.dados?.contas || [],
+    // Só as contas em que dá para publicar (o formulário e as métricas usam estas).
+    contasDePost: (contas.dados?.contas || []).filter(c => publica(c.plataforma)),
     temMetricas: contas.dados?.temMetricas !== false,
     contasCarregando: contas.carregando,
     contasErro: contas.erro,

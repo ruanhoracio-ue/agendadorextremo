@@ -31,7 +31,7 @@ export function fonteZernio(chave, { perfilId, fuso }) {
     perfis,
 
     async contas() {
-      const r = await z('/accounts', { query: { profileId: perfilId, category: 'social' } })
+      const r = await z('/accounts', { query: { profileId: perfilId } })
       return { contas: (r.accounts || []).map(contaDoZernio), temMetricas: r.hasAnalyticsAccess !== false }
     },
 
@@ -40,14 +40,38 @@ export function fonteZernio(chave, { perfilId, fuso }) {
       return { id: r.profile._id, nome: r.profile.name, padrao: Boolean(r.profile.isDefault), contas: 0 }
     },
 
-    async urlConexao(plataforma, { voltarPara, reconectarContaId, viaFacebook }) {
-      const r = await z(`/connect/${encodeURIComponent(plataforma)}`, {
+    async urlConexao({ rota, extra }, { voltarPara, reconectarContaId, viaFacebook, loja }) {
+      const r = await z(rota, {
         query: {
           profileId: await perfilAtivo(), redirect_url: voltarPara, reconnectAccountId: reconectarContaId,
-          loginMethod: viaFacebook ? 'facebook_login' : undefined,
+          loginMethod: viaFacebook ? 'facebook_login' : undefined, shop: loja, ...extra,
         },
       })
-      return { url: r.authUrl }
+      return { url: r.authUrl || r.url || null }
+    },
+
+    // Telegram não tem tela de login: o Zernio gera um código para mandar ao bot.
+    async codigoTelegram() {
+      const r = await z('/connect/telegram', { query: { profileId: await perfilAtivo() } })
+      return { codigo: r.code, bot: r.botUsername, validoPorMinutos: Math.round((r.expiresIn || 900) / 60) }
+    },
+
+    // Melhores horários para postar, pelo engajamento dos posts já publicados.
+    // O Zernio devolve dia da semana e hora em UTC; aqui viram dia e hora no
+    // fuso do app (dia: 0 = domingo ... 6 = sábado).
+    async melhoresHorarios() {
+      const r = await z('/analytics/best-time', { query: { profileId: perfilId } })
+      const noFuso = new Intl.DateTimeFormat('en-US', { timeZone: fuso, weekday: 'short', hour: 'numeric', hourCycle: 'h23' })
+      const DIAS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+      return (r.slots || [])
+        .filter(s => s.post_count > 0 && s.avg_engagement > 0)
+        .sort((a, b) => b.avg_engagement - a.avg_engagement)
+        .slice(0, 5)
+        .map(s => {
+          // 1º de janeiro de 2024 foi uma segunda-feira (dia 0 para o Zernio).
+          const partes = Object.fromEntries(noFuso.formatToParts(new Date(Date.UTC(2024, 0, 1 + s.day_of_week, s.hour))).map(p => [p.type, p.value]))
+          return { dia: DIAS.indexOf(partes.weekday), hora: Number(partes.hour), engajamento: Math.round(s.avg_engagement), posts: s.post_count }
+        })
     },
 
     async desconectar(contaId) {
@@ -110,7 +134,7 @@ export function fonteZernio(chave, { perfilId, fuso }) {
       const desde = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10)
       const falhos = (status) => z('/posts', { query: { status, fromDate: desde, profileId: perfilId, limit: 50, sortBy: 'scheduled-desc' } })
       const [falhou, parcial, contas] = await Promise.all([
-        falhos('failed'), falhos('partial'), z('/accounts', { query: { profileId: perfilId, category: 'social' } }),
+        falhos('failed'), falhos('partial'), z('/accounts', { query: { profileId: perfilId } }),
       ])
       return {
         posts: [...(falhou.posts || []), ...(parcial.posts || [])].map(postDoZernio),

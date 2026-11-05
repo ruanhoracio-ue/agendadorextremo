@@ -5,11 +5,13 @@ import { Modal } from './Modal'
 import { Faixa, avisar } from './Avisos'
 import { IconeRede } from './IconeRede'
 import { SeletorDoHub } from './SeletorDoHub'
+import { PreviaDoPost } from './PreviaDoPost'
 import { classeCampo } from './campos'
 import { api, enviarArquivo } from '../../lib/api'
 import { useApp } from '../../lib/contexto'
 import { rede, pendencias } from '../../lib/redes'
-import { paraCampo } from '../../lib/datas'
+import { paraCampo, proximaOcorrencia, diaDaSemanaCurto } from '../../lib/datas'
+import { useDados } from '../../lib/useDados'
 import { tamanhoArquivo } from '../../lib/formato'
 import { cn } from '../../lib/cn'
 
@@ -56,9 +58,12 @@ function estadoInicial({ post, dia, fuso }) {
  * `post` preenchido = edição; `dia` = data sugerida ao clicar num dia do calendário.
  */
 export function Compositor({ aberto, aoFechar, aoSalvar, post, dia }) {
-  const { contas, fuso, estado } = useApp()
+  const { contasDePost: contas, fuso, estado } = useApp()
   const [f, setF] = useState(() => estadoInicial({ post, dia, fuso }))
   const [escolhendoDoHub, setEscolhendoDoHub] = useState(false)
+  const [vendoPrevia, setVendoPrevia] = useState(false)
+  // Horários em que os posts já publicados tiveram mais engajamento.
+  const horarios = useDados(() => api.melhoresHorarios(), [aberto], { ativo: aberto })
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState(null)
   const idempotencia = useRef(null)
@@ -157,6 +162,7 @@ export function Compositor({ aberto, aoFechar, aoSalvar, post, dia }) {
       tamanho="lg"
       rodape={
         <>
+          <Button variant="secondary" size="field" className="mr-auto" onClick={() => setVendoPrevia(true)}>Ver prévia</Button>
           <Button variant="ghost" size="field" onClick={aoFechar}>Cancelar</Button>
           <Button size="field" onClick={enviar} disabled={enviando || subindo || faltas.length > 0}>{rotuloBotao}</Button>
         </>
@@ -333,6 +339,23 @@ export function Compositor({ aberto, aoFechar, aoSalvar, post, dia }) {
           )}
         </div>
 
+        {f.modo === 'agendar' && (horarios.dados?.horarios || []).length > 0 && (
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-caption text-mute">Melhores horários, pelo engajamento dos teus posts:</span>
+            {horarios.dados.horarios.map(h => (
+              <button
+                key={`${h.dia}-${h.hora}`}
+                type="button"
+                title={`Média de ${h.engajamento} interações em ${h.posts} ${h.posts === 1 ? 'post' : 'posts'} nesse horário`}
+                onClick={() => mudar({ quando: proximaOcorrencia(h.dia, h.hora, fuso) })}
+                className="rounded-full border border-hairline bg-surface px-2.5 py-1 text-caption font-medium text-body transition-colors hover:border-emerald hover:text-emerald-deep"
+              >
+                {diaDaSemanaCurto(h.dia)} {h.hora}h
+              </button>
+            ))}
+          </div>
+        )}
+
         {f.modo === 'agora' && <Faixa tom="alerta">O post vai para as redes assim que você clicar em Publicar agora. Não dá para desfazer por aqui.</Faixa>}
         {faltas.length > 0 && (
           <Faixa tom="info" titulo="Falta para liberar o envio:">
@@ -341,6 +364,16 @@ export function Compositor({ aberto, aoFechar, aoSalvar, post, dia }) {
         )}
         {erro && <Faixa tom="erro" titulo="O envio não foi aceito.">{erro}</Faixa>}
       </div>
+
+      <PreviaDoPost
+        aberto={vendoPrevia}
+        aoFechar={() => setVendoPrevia(false)}
+        destinos={destinos}
+        contas={contas}
+        conteudo={f.conteudo}
+        midias={f.midias}
+        tituloYoutube={f.tituloYoutube}
+      />
 
       <SeletorDoHub
         aberto={escolhendoDoHub}

@@ -48,7 +48,9 @@ export const api = {
   criarPerfil: (nome) => chamar('POST', '/perfis', { nome }),
 
   contas: () => chamar('GET', '/contas'),
-  conectar: (plataforma, { reconectar, metodo } = {}) => chamar('GET', `/contas/conectar/${plataforma}${consulta({ reconectar, metodo })}`),
+  conectar: (plataforma, { reconectar, metodo, loja } = {}) => chamar('GET', `/contas/conectar/${plataforma}${consulta({ reconectar, metodo, loja })}`),
+  codigoTelegram: () => chamar('GET', '/contas/telegram'),
+  melhoresHorarios: () => chamar('GET', '/melhores-horarios'),
   desconectar: (id) => chamar('DELETE', `/contas/${encodeURIComponent(id)}`),
 
   posts: (de, ate) => chamar('GET', `/posts${consulta({ de, ate })}`),

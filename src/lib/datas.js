@@ -70,3 +70,20 @@ export function haQuanto(iso) {
   if (dias < 7) return `há ${dias} ${dias === 1 ? 'dia' : 'dias'}`
   return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }).format(new Date(iso))
 }
+
+const SEMANA_CURTA = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb']
+export const diaDaSemanaCurto = (dia) => SEMANA_CURTA[dia]
+export const diaDaSemana = (dia) => new Date(`${dia}T00:00:00Z`).getUTCDay()
+
+// Próxima vez que cai aquele dia da semana (0 = domingo) naquela hora, no fuso
+// do app, a partir de agora. Devolve no formato do <input type="datetime-local">.
+export function proximaOcorrencia(diaSemana, hora, fuso) {
+  const agora = paraCampo(new Date().toISOString(), fuso)
+  const hoje = agora.slice(0, 10)
+  for (let i = 0; i <= 7; i++) {
+    const dia = somarDias(hoje, i)
+    const candidato = `${dia}T${String(hora).padStart(2, '0')}:00`
+    if (diaDaSemana(dia) === diaSemana && candidato > agora) return candidato
+  }
+  return ''
+}

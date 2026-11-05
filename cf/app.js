@@ -18,10 +18,10 @@ import { lerConfig, salvarConfig, chaveZernio, fusoValido, FUSO_PADRAO } from '.
 import { fonteZernio } from './fonte.js'
 import { fonteVazia } from './vazia.js'
 import { hub, chaveDoHub } from './hub.js'
+import { CONEXOES } from './conexoes.js'
 
 const app = new Hono().basePath('/api')
 
-const PLATAFORMAS_CONEXAO = ['instagram', 'youtube', 'tiktok', 'facebook', 'linkedin', 'twitter', 'threads', 'pinterest', 'googlebusiness']
 const TIPOS_DE_ARQUIVO = [
   'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif',
   'video/mp4', 'video/mpeg', 'video/quicktime', 'video/avi', 'video/x-msvideo', 'video/webm', 'video/x-m4v',
@@ -234,17 +234,25 @@ app.post('/perfis', async (c) => {
 
 app.get('/contas', async (c) => c.json(await (await fonte(c)).contas()))
 
+app.get('/contas/telegram', async (c) => c.json(await (await fonte(c)).codigoTelegram()))
+
 app.get('/contas/conectar/:plataforma', async (c) => {
   const plataforma = c.req.param('plataforma')
-  if (!PLATAFORMAS_CONEXAO.includes(plataforma)) throw erro(400, 'Rede não suportada.')
+  const conexao = CONEXOES[plataforma]
+  if (!conexao) throw erro(400, 'Conexão não suportada.')
+  const loja = (c.req.query('loja') || '').trim()
+  if (conexao.pede === 'shop' && !/^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i.test(loja)) throw erro(400, 'Informe o endereço da loja, no formato sualoja.myshopify.com.')
   const voltarPara = `${new URL(c.req.url).origin}/contas?conectada=${plataforma}`
   const f = await fonte(c)
-  return c.json(await f.urlConexao(plataforma, {
+  const { url } = await f.urlConexao(conexao, {
     voltarPara,
     reconectarContaId: c.req.query('reconectar') || undefined,
     // Instagram tem dois caminhos de login: direto ou pela Página do Facebook.
     viaFacebook: plataforma === 'instagram' && c.req.query('metodo') === 'facebook',
-  }))
+    loja: conexao.pede === 'shop' ? loja : undefined,
+  })
+  if (!url) throw erro(502, 'O Zernio não devolveu um endereço de login para esta conexão. Conecte pelo painel do Zernio.')
+  return c.json({ url })
 })
 
 app.delete('/contas/:id', async (c) => {
@@ -314,6 +322,8 @@ app.get('/seguidores', async (c) => {
   const f = await fonte(c)
   return c.json({ contas: await f.seguidores({ de: dataOuNada(c.req.query('de')), ate: dataOuNada(c.req.query('ate')) }) })
 })
+
+app.get('/melhores-horarios', async (c) => c.json({ horarios: await (await fonte(c)).melhoresHorarios() }))
 
 // ---------- Avisos ----------
 

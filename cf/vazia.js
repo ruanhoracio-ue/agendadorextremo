@@ -16,6 +16,8 @@ export function fonteVazia() {
     criarPerfil: recusar,
     contas: async () => ({ contas: [], temMetricas: true }),
     urlConexao: recusar,
+    codigoTelegram: recusar,
+    melhoresHorarios: async () => [],
     desconectar: recusar,
     posts: async () => [],
     criarPost: recusar,

@@ -16,19 +16,25 @@ A interface usa o design system da Conversão Extrema
   anterior, visualizações por dia, próximos posts, o que precisa de atenção,
   melhores posts, desempenho por rede, seguidores por conta, caixa de entrada,
   contas e vídeos aprovados no content-hub. Um período só (7, 30 ou 90 dias)
-  governa tudo.
+  governa tudo. O "Analista da semana" compara os últimos 7 dias com os 7
+  anteriores e escreve o que funcionou, o que caiu e o que repetir; são regras
+  fixas sobre os números (`src/lib/analista.js`), não IA.
 - **Calendário**: mês ou lista, com o status de cada post. Clique num dia para
   agendar, num post para ver o detalhe (status por rede, erro, tentar de novo,
   editar, excluir). Rascunhos ficam abaixo da grade. O formulário aceita um
   texto diferente por rede e, com o content-hub ligado, puxa um vídeo curto
-  aprovado (arquivo e legenda).
+  aprovado (arquivo e legenda). Ele também sugere os melhores horários (pelo
+  engajamento dos posts já publicados) e mostra uma prévia do post em cada
+  rede. "Prévia do feed" mostra a grade do Instagram com os agendados no topo.
 - **Caixa de entrada**: comentários dos posts e mensagens diretas de todas as
   contas, com resposta daqui mesmo.
 - **Métricas**: período, conta e origem (pelo agendador ou direto na rede).
   Indicadores com variação contra o período anterior, seguidores por conta e a
   tabela de posts ordenável.
-- **Contas conectadas**: um cartão por rede, com o botão de conectar. O login
-  acontece na tela oficial da rede e volta para cá.
+- **Contas conectadas**: tudo o que o Zernio conecta (redes sociais,
+  mensagens, anúncios, sites e blogs, dados), um cartão por conexão. O login
+  acontece na tela oficial de cada serviço e volta para cá. O catálogo fica em
+  `src/lib/redes.js` e as rotas do Zernio em `cf/conexoes.js`.
 - **Configurações**: chave da API do Zernio, ligação com o content-hub e fuso
   horário.
 - **Avisos** (sino no topo): posts que falharam nos últimos 30 dias e contas

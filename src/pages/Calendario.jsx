@@ -5,6 +5,7 @@ import { Faixa, Vazio, Carregando } from '../components/app/Avisos'
 import { RedesDoPost } from '../components/app/IconeRede'
 import { Compositor } from '../components/app/Compositor'
 import { PostDetalhe } from '../components/app/PostDetalhe'
+import { GradeDoFeed } from '../components/app/GradeDoFeed'
 import { api } from '../lib/api'
 import { useApp } from '../lib/contexto'
 import { useDados } from '../lib/useDados'
@@ -28,6 +29,7 @@ export default function Calendario() {
   const [visao, setVisao] = useState(() => (window.innerWidth < 768 ? 'lista' : 'mes'))
   const [compositor, setCompositor] = useState(null) // { post? , dia? }
   const [aberto, setAberto] = useState(null) // id do post em detalhe
+  const [vendoFeed, setVendoFeed] = useState(false)
 
   const grade = useMemo(() => gradeDoMes(mes.ano, mes.mes), [mes])
   const posts = useDados(() => api.posts(grade.inicio, grade.fim), [grade.inicio, grade.fim])
@@ -84,7 +86,8 @@ export default function Calendario() {
         </div>
         <Heading level={4} as="h2" className="min-w-[11rem]">{nomeDoMes(mes.ano, mes.mes)}</Heading>
         <Button variant="secondary" size="sm" onClick={() => setMes({ ano: Number(hoje.slice(0, 4)), mes: Number(hoje.slice(5, 7)) - 1 })}>Hoje</Button>
-        <SegmentedControl className="ml-auto" ariaLabel="Modo de exibição" options={VISOES} value={visao} onChange={setVisao} />
+        <Button variant="secondary" size="sm" className="ml-auto" onClick={() => setVendoFeed(true)}>Prévia do feed</Button>
+        <SegmentedControl ariaLabel="Modo de exibição" options={VISOES} value={visao} onChange={setVisao} />
       </div>
 
       {posts.erro && (
@@ -181,6 +184,8 @@ export default function Calendario() {
           </ul>
         </section>
       )}
+
+      <GradeDoFeed aberto={vendoFeed} aoFechar={() => setVendoFeed(false)} />
 
       <Compositor
         aberto={Boolean(compositor)}

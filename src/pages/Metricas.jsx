@@ -29,7 +29,7 @@ const variacao = (atual, anterior) => (anterior > 0 ? ((atual - anterior) / ante
 const celula = (valor) => (valor ? inteiro(valor) : <span className="text-faint">—</span>)
 
 export default function Metricas() {
-  const { fuso, contas, temMetricas } = useApp()
+  const { fuso, contasDePost: contas, temMetricas } = useApp()
   const hoje = hojeNoFuso(fuso)
   // O intervalo é a fonte da verdade; os presets são só atalhos para ele.
   const [intervalo, setIntervalo] = useState({ inicio: somarDias(hoje, -29), fim: hoje })
