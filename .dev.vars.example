@@ -1,0 +1,16 @@
+# Variáveis para rodar o agendador na sua máquina (npm run dev).
+# Copie para `.dev.vars` (fora do git) e preencha.
+# Em produção os mesmos nomes viram secrets do Worker:
+#   npx wrangler secret put APP_PASSWORD
+
+# Senha de acesso ao app. Obrigatória fora do localhost: sem ela o app
+# publicado se recusa a funcionar, porque quem entra pode postar nas redes.
+APP_PASSWORD=
+
+# Chave da API do Zernio (zernio.com > Dashboard > API Keys).
+# Opcional aqui: também dá para colar a chave na tela Configurações do app.
+ZERNIO_API_KEY=
+
+# Chave da API de integração do content-hub (opcional). Liga o botão
+# "Puxar vídeo aprovado" e devolve o status agendado/publicado para lá.
+CONTENT_HUB_KEY=

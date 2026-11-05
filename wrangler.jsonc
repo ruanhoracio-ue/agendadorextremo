@@ -1,0 +1,27 @@
+{
+  // Worker do Agendador Extremo (Cloudflare Workers + Static Assets).
+  "name": "agendador-extremo",
+  "compatibility_date": "2024-12-01",
+
+  // Conta Universo Extremo, a mesma do content-hub.
+  "account_id": "901c0fcf76c923b25df1d818a91389d5",
+
+  "main": "worker.js",
+
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+
+  // KV que guarda o que é salvo pela tela Configurações: chave do Zernio
+  // (quando não vem do secret ZERNIO_API_KEY), fuso horário e perfil.
+  // Criado com: npx wrangler@4 kv namespace create agendador_kv
+  "kv_namespaces": [
+    { "binding": "AGENDADOR_KV", "id": "4e2d18b15b4f4928818db25d00261aa8" }
+  ]
+
+  // Secrets (não vão neste arquivo):
+  //   npx wrangler@4 secret put APP_PASSWORD
+  //   npx wrangler@4 secret put ZERNIO_API_KEY   (opcional, veja acima)
+}

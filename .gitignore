@@ -1,0 +1,12 @@
+node_modules
+dist
+.vite
+.DS_Store
+._*
+
+# Chaves e dados locais
+.dev.vars
+.dev-data
+.wrangler
+.env
+.env.local

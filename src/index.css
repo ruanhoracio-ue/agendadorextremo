@@ -1,0 +1,902 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
+
+@import 'tailwindcss';
+
+/* Tema escuro por classe em <html> (equivalente ao darkMode: 'class' da v3) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/**
+ * ─────────────────────────────────────────────────────────────────────────
+ * CONVERSÃO EXTREMA — DESIGN TOKENS (single source of truth)
+ * Fundação do design system: cor, tipografia, espaçamento, raio, elevação,
+ * motion e layout. Nomes semânticos + escalas numéricas completas.
+ * Na Tailwind v4 os tokens vivem no CSS (@theme) e são expostos como
+ * CSS variables — consumíveis tanto por utilitários quanto por CSS puro.
+ * ─────────────────────────────────────────────────────────────────────────
+ */
+@theme {
+  /* ── Breakpoints ───────────────────────────────────────────────────────── */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1440px;
+
+  /* ── Cor ───────────────────────────────────────────────────────────────── */
+  /* Escala neutra proprietária (levemente quente — pareia com Geist) */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-150: #ececec;
+  --color-neutral-200: #e6e6e6;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a1a1a1;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+  --color-neutral-950: #0a0a0a;
+
+  /* Acento — Esmeralda (escala completa 50→950) */
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-200: #a7f3d0;
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
+  --color-emerald-900: #064e3b;
+  --color-emerald-950: #022c22;
+  /* aliases semânticos (--color-emerald = classe `emerald` sem sufixo) */
+  --color-emerald: #10b981;
+  --color-emerald-light: #34d399;
+
+  /* Feedback — só o matiz base, que é o mesmo nos dois temas. Os pares
+     soft/deep vivem no `@theme inline` porque MUDAM com o tema: ver a nota
+     em §"Pares soft/deep" mais abaixo. */
+  --color-success: #10b981;
+  --color-warning: #f5a623;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  /* ── Tipografia ────────────────────────────────────────────────────────── */
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Escala nomeada: tamanho + line-height, letter-spacing e font-weight */
+  --text-display-2xl: 72px;
+  --text-display-2xl--line-height: 1;
+  --text-display-2xl--letter-spacing: -0.04em;
+  --text-display-2xl--font-weight: 600;
+
+  --text-display-xl: 60px;
+  --text-display-xl--line-height: 1.02;
+  --text-display-xl--letter-spacing: -0.035em;
+  --text-display-xl--font-weight: 600;
+
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 1.05;
+  --text-display-lg--letter-spacing: -0.03em;
+  --text-display-lg--font-weight: 600;
+
+  --text-heading-xl: 40px;
+  --text-heading-xl--line-height: 1.1;
+  --text-heading-xl--letter-spacing: -0.022em;
+  --text-heading-xl--font-weight: 600;
+
+  --text-heading-lg: 32px;
+  --text-heading-lg--line-height: 1.15;
+  --text-heading-lg--letter-spacing: -0.02em;
+  --text-heading-lg--font-weight: 600;
+
+  --text-heading-md: 24px;
+  --text-heading-md--line-height: 1.25;
+  --text-heading-md--letter-spacing: -0.017em;
+  --text-heading-md--font-weight: 600;
+
+  --text-heading-sm: 20px;
+  --text-heading-sm--line-height: 1.3;
+  --text-heading-sm--letter-spacing: -0.013em;
+  --text-heading-sm--font-weight: 600;
+
+  --text-body-xl: 20px;
+  --text-body-xl--line-height: 1.6;
+  --text-body-xl--letter-spacing: 0;
+  --text-body-xl--font-weight: 400;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.6;
+  --text-body-lg--letter-spacing: 0;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.6;
+  --text-body-md--letter-spacing: 0;
+  --text-body-md--font-weight: 400;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 1.55;
+  --text-body-sm--letter-spacing: 0;
+  --text-body-sm--font-weight: 400;
+
+  --text-label-lg: 15px;
+  --text-label-lg--line-height: 1.2;
+  --text-label-lg--letter-spacing: -0.006em;
+  --text-label-lg--font-weight: 500;
+
+  --text-label-md: 13px;
+  --text-label-md--line-height: 1.2;
+  --text-label-md--letter-spacing: 0;
+  --text-label-md--font-weight: 500;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 1.4;
+  --text-caption--letter-spacing: 0;
+  --text-caption--font-weight: 400;
+
+  --text-eyebrow: 12px;
+  --text-eyebrow--line-height: 1;
+  --text-eyebrow--letter-spacing: 0.14em;
+  --text-eyebrow--font-weight: 400;
+
+  --text-code: 13px;
+  --text-code--line-height: 1.6;
+  --text-code--letter-spacing: 0;
+  --text-code--font-weight: 400;
+
+  --tracking-tightest: -0.04em;
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-eyebrow: 0.14em; /* decorativo: rótulo acima de título, só marketing */
+  --tracking-label: 0.04em; /*   rótulo de UI: label de formulário, cabeçalho de tabela */
+  --tracking-wide: 0.05em;
+
+  /* ── Espaçamento ───────────────────────────────────────────────────────── */
+  /* A escala numérica (p-4, w-18, gap-4.5…) vem do multiplicador base de 4px
+     da v4; abaixo ficam apenas os tokens de layout nomeados. */
+  --spacing: 0.25rem;
+  --spacing-section-sm: 64px;
+  --spacing-section: 96px;
+  --spacing-section-lg: 128px;
+  --spacing-gutter: 24px;
+
+  /* ── Raio de borda ─────────────────────────────────────────────────────── */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-3xl: 40px;
+
+  /* ── Elevação (sombras discretas e refinadas) ──────────────────────────── */
+  --shadow-xs: 0 1px 2px 0 rgb(23 23 23 / 0.04);
+  --shadow-sm: 0 1px 3px 0 rgb(23 23 23 / 0.06), 0 1px 2px -1px rgb(23 23 23 / 0.04);
+  --shadow-md: 0 4px 12px -2px rgb(23 23 23 / 0.08);
+  --shadow-lg: 0 12px 32px -8px rgb(23 23 23 / 0.12);
+  --shadow-xl: 0 24px 56px -16px rgb(23 23 23 / 0.16);
+  /* aliases usados nos componentes */
+  --shadow-subtle: 0 1px 2px 0 rgb(23 23 23 / 0.04);
+  --shadow-soft: 0 20px 50px -24px rgb(23 23 23 / 0.18);
+  --shadow-emerald: 0 20px 50px -20px rgb(16 185 129 / 0.35);
+
+  /* ── Motion ────────────────────────────────────────────────────────────── */
+  --transition-duration-fast: 150ms;
+  --transition-duration-normal: 200ms;
+  --transition-duration-slow: 300ms;
+  --transition-duration-slower: 500ms;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ── Layout ────────────────────────────────────────────────────────────── */
+  /* namespace --max-width-* (tem precedência sobre --container-*, e por isso
+     sobrepõe o `max-w-prose` de 65ch que a v4 traz embutido) */
+  --max-width-prose: 68ch;
+  --max-width-container: 1200px;
+  --max-width-container-wide: 1360px;
+
+  --z-index-base: 0;
+  --z-index-raised: 10;
+  --z-index-sticky: 40;
+  --z-index-overlay: 50;
+  --z-index-modal: 60;
+  --z-index-popover: 70;
+  --z-index-toast: 80;
+}
+
+/**
+ * Tokens semânticos TEMÁVEIS. Os canais RGB ficam em --c-* (:root / .dark,
+ * logo abaixo) e o `@theme inline` faz o Tailwind escrever `rgb(var(--c-x))`
+ * direto no utilitário — é isso que mantém o token resolvendo por elemento e,
+ * portanto, reagindo à troca de tema. Modificadores de opacidade (bg-ink/60)
+ * continuam funcionando, agora via color-mix().
+ */
+@theme inline {
+  --color-ink: rgb(var(--c-ink)); /*        texto/títulos */
+  --color-body: rgb(var(--c-body)); /*      texto de corpo */
+  --color-mute: rgb(var(--c-mute)); /*      texto secundário */
+  --color-faint: rgb(var(--c-faint)); /*    placeholder/disabled */
+  --color-hairline: rgb(var(--c-hairline));
+  --color-hairline-soft: rgb(var(--c-hairline-soft));
+  --color-hairline-strong: rgb(var(--c-hairline-strong));
+  --color-canvas: rgb(var(--c-canvas)); /*     fundo da página */
+  --color-surface: rgb(var(--c-surface)); /*   superfície de cards */
+  --color-elevated: rgb(var(--c-elevated)); /* preenchimento sutil */
+  --color-inverse: rgb(var(--c-inverse)); /*   superfície de contraste (botão primário) */
+  --color-on-inverse: rgb(var(--c-on-inverse)); /* texto sobre inverse */
+
+  /* ── Pares soft/deep ─────────────────────────────────────────────────────
+     `soft` é o fundo do selo, `deep` é o texto dele. Precisam trocar com o
+     tema: eram hex fixos, então no escuro o selo de "Ativo" era literalmente
+     uma pílula de tema claro — verde-menta acesa — jogada sobre fundo preto.
+
+     No escuro o fundo vira o próprio matiz a 16% (a mesma receita do avatar
+     do topo, `bg-emerald/10`) e o texto sobe para o passo 400 da rampa. Sobre
+     fundo escuro o "deep" legível é o claro, não o escuro: com o `#047857`
+     de origem o texto ficava mais escuro que o próprio fundo do selo.
+
+     Os 16% e os passos 400 não foram escolhidos no olho — o texto fica entre
+     5,5:1 e 7,9:1 sobre `surface` e sobre `elevated`, acima dos 4,5:1 que
+     11px em negrito exige. (O avatar do topo, na receita original, está em
+     4,14:1; ao passar a usar estes tokens ele sobe junto.) */
+  --color-emerald-soft: var(--fb-emerald-soft);
+  --color-emerald-deep: var(--fb-emerald-deep);
+  --color-success-soft: var(--fb-success-soft);
+  --color-success-deep: var(--fb-success-deep);
+  --color-warning-soft: var(--fb-warning-soft);
+  --color-warning-deep: var(--fb-warning-deep);
+  --color-danger-soft: var(--fb-danger-soft);
+  --color-danger-deep: var(--fb-danger-deep);
+  --color-info-soft: var(--fb-info-soft);
+  --color-info-deep: var(--fb-info-deep);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   TOKENS DE COR TEMÁVEIS — canais RGB (para permitir opacidade no Tailwind).
+   :root = tema claro · .dark = tema escuro. Trocados via classe em <html>.
+   ───────────────────────────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    /* Diz ao navegador em que tema desenhar o cromo que é dele: o calendário
+       do `<input type="date">`, as setas do `<select>`, a barra de rolagem.
+       Sem isso o seletor de data abre branco por cima da tela escura. */
+    color-scheme: light;
+
+    /* Pares soft/deep — claro: fundo pálido, texto escuro do mesmo matiz. */
+    --fb-emerald-soft: #d1fae5;
+    --fb-emerald-deep: #059669;
+    --fb-success-soft: #d1fae5;
+    --fb-success-deep: #047857;
+    --fb-warning-soft: #fef3c7;
+    --fb-warning-deep: #b45309;
+    --fb-danger-soft: #fee2e2;
+    --fb-danger-deep: #b91c1c;
+    --fb-info-soft: #dbeafe;
+    --fb-info-deep: #1d4ed8;
+    --sel-bg: #d1fae5;
+    --sel-fg: #059669;
+
+    --c-canvas: 250 250 250;
+    --c-surface: 255 255 255;
+    --c-elevated: 245 245 245;
+    --c-ink: 23 23 23;
+    --c-body: 38 38 38; /*  neutral-800 — corpo mais escuro, leitura premium */
+    --c-mute: 82 82 82; /*  neutral-600 — secundário com mais contraste */
+    --c-faint: 161 161 161;
+    --c-hairline: 236 236 236;
+    --c-hairline-soft: 244 244 244;
+    --c-hairline-strong: 212 212 212;
+    --c-inverse: 23 23 23; /*     botão primário: fundo escuro… */
+    --c-on-inverse: 255 255 255; /* …texto claro */
+    --brand-grad-from: var(--color-emerald-500);
+    --brand-grad-to: var(--color-emerald-400);
+    /* Grade de pontos do fundo (DotGrid): menor no claro */
+    --dot-r: 0.75px;
+    --dot-r-fade: 1.2px;
+    /* Segundo tom dos ícones duotone (ver .icon-duotone) */
+    --icon-duotone-accent: var(--color-emerald-500);
+    --icon-duotone-opacity: 1;
+    /* Brilho de borda dos cards no hover: núcleo esmeralda claro que abre para
+       o tom da marca. No claro o núcleo não pode ser branco — sumiria contra a
+       superfície. */
+    --card-glow-core: var(--color-emerald-400);
+    --card-glow-edge: rgb(16 185 129 / 0.35);
+    /* Forma do Input. Vive em variável, e não em utilitário, porque
+       `rounded-full` compila para um valor literal — o escopo `.ds-app` não
+       teria como alcançá-lo. */
+    --ds-input-height: 2.75rem; /* 44px — pílula da landing */
+    --ds-input-radius: 9999px;
+    --ds-input-px: 1.25rem;
+    /* Caixa do rótulo de formulário. Versalete é linguagem de marketing; em
+       tela de trabalho o rótulo é lido junto com o campo e não precisa disso. */
+    --ds-label-transform: uppercase;
+    --ds-label-tracking: var(--tracking-label);
+
+    /* ── Paleta categórica de gráfico ──────────────────────────────────────
+       Ordem fixa, nunca ciclada: uma quarta série não vira um matiz gerado —
+       ela vira "Outros", facetas ou codificação composta.
+
+       Validada pelo script do guia de visualização em ambos os modos (pares
+       completos): pior separação sob daltonismo ΔE 9.2 no claro e 9.4 no
+       escuro, acima do alvo de 8. O terceiro passo fica abaixo de 3:1 de
+       contraste no claro — por isso toda leitura desta paleta acompanha
+       rótulo visível e a mesma série numa tabela, que é o alívio exigido.
+
+       A marca não lidera aqui de propósito: com o esmeralda no lugar do azul
+       a separação caía para 4.2 em tritanopia. Cor de gráfico responde a
+       legibilidade, não a identidade — o verde da marca segue nos estados. */
+    --chart-1: #2a78d6;
+    --chart-2: #eb6834;
+    --chart-3: #1baf7a;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    /* Escuro: o matiz a 16% no fundo e o passo 400 no texto. Não é o par
+       claro invertido — é o par redesenhado para a superfície escura. */
+    --fb-emerald-soft: rgb(16 185 129 / 0.16);
+    --fb-emerald-deep: #34d399;
+    --fb-success-soft: rgb(16 185 129 / 0.16);
+    --fb-success-deep: #34d399;
+    --fb-warning-soft: rgb(245 166 35 / 0.16);
+    --fb-warning-deep: #fbbf24;
+    --fb-danger-soft: rgb(239 68 68 / 0.16);
+    --fb-danger-deep: #f87171;
+    --fb-info-soft: rgb(59 130 246 / 0.16);
+    --fb-info-deep: #60a5fa;
+    /* Seleção no escuro: esmeralda bem mais presente que os 16% do selo. */
+    --sel-bg: rgb(16 185 129 / 0.35);
+    --sel-fg: #ecfdf5;
+
+    --c-canvas: 10 10 10;
+    --c-surface: 23 23 23;
+    --c-elevated: 38 38 38;
+    --c-ink: 250 250 250;
+    --c-body: 209 209 209;
+    --c-mute: 168 168 168;
+    --c-faint: 115 115 115;
+    --c-hairline: 38 38 38;
+    --c-hairline-soft: 31 31 31;
+    --c-hairline-strong: 64 64 64;
+    --c-inverse: 250 250 250; /*  botão primário: fundo claro… */
+    --c-on-inverse: 10 10 10; /*  …texto escuro */
+    --brand-grad-from: var(--color-emerald-500);
+    --brand-grad-to: var(--color-emerald-400);
+    /* Pontos do fundo no tamanho original no escuro */
+    --dot-r: 1px;
+    --dot-r-fade: 1.6px;
+    /* Um degrau mais claro no escuro: o 500 fecha demais contra o fundo */
+    --icon-duotone-accent: var(--color-emerald-400);
+    --icon-duotone-opacity: 1;
+    /* No escuro o núcleo quase branco dá o brilho de "luz acesa"; a borda
+       hairline é escura, então há contraste de sobra para sustentá-lo. */
+    --card-glow-core: #d8fff0;
+    --card-glow-edge: rgb(52 211 153 / 0.45);
+    /* Mesmos matizes, repassados para a superfície escura — não é inversão
+       automática: cada passo foi escolhido e revalidado contra #171717. */
+    --chart-1: #3987e5;
+    --chart-2: #d95926;
+    --chart-3: #199e70;
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     DENSIDADE DE APLICAÇÃO
+
+     Os tokens acima são calibrados para a landing: superfícies grandes,
+     respiro generoso, cantos macios. Em dashboard, login e telas internas o
+     mesmo raio lê como cápsula — um item de menu de 40px com raio de 12px
+     tem 30% da altura arredondada.
+
+     `.ds-app` reaponta a escala de raio para a subárvore. Nenhum componente
+     muda: na v4 todo utilitário compila para `var(--radius-*)`, então quem
+     define a calibragem é o contexto — mesmo mecanismo que o `.dark` usa
+     para cor.
+
+         <div className="ds-app">  …todo o shell da aplicação…  </div>
+
+     Regra de bolso para o raio: até ~10% da altura do bloco. Acima disso a
+     forma começa a competir com o conteúdo.
+     ──────────────────────────────────────────────────────────────────────── */
+  .ds-app {
+    --radius-xs: 3px; /*   4px  */
+    --radius-sm: 6px; /*   8px  */
+    --radius-md: 8px; /*  12px  */
+    --radius-lg: 12px; /* 16px — Card flat */
+    --radius-xl: 16px; /* 24px — Card premium */
+    --radius-2xl: 20px; /* 32px */
+
+    /* ── Tipografia de aplicação ──────────────────────────────────────────
+       A escala da landing é de pôster: um título de página em 40px e um
+       parágrafo de apoio em 18px funcionam num hero, mas numa tela de
+       trabalho competem com o dado. Um degrau abaixo em toda a escala.
+
+       Só o tamanho é reapontado: entrelinha é razão e tracking é em `em`,
+       então os dois acompanham sozinhos. */
+    --text-heading-xl: 28px; /* 40px — título de página */
+    --text-heading-lg: 22px; /* 32px */
+    --text-heading-md: 18px; /* 24px */
+    --text-heading-sm: 15px; /* 20px — título de card */
+    --text-body-xl: 16px; /*    20px */
+    --text-body-lg: 15px; /*    18px — descrição de página */
+    --text-body-md: 14px; /*    16px */
+
+    /* O eyebrow é decorativo por natureza: 0.14em e peso 400 desenham um
+       rótulo arejado acima de um hero. Como marcador de contexto num painel
+       ele precisa do oposto — mais firme e menos espalhado. */
+    --text-eyebrow--letter-spacing: 0.06em;
+    --text-eyebrow--font-weight: 600;
+
+    /* Campo de formulário de aplicação: 36px e canto discreto. A pílula de
+       44px é linguagem de landing — numa topbar de 64px ela domina a barra. */
+    --ds-input-height: 2.25rem;
+    --ds-input-radius: var(--radius-md);
+    --ds-input-px: 0.75rem;
+    --ds-label-transform: none;
+    --ds-label-tracking: 0;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-ink;
+  }
+
+  /* Seleção NÃO pega carona no par soft/deep. Fundo de selo é discreto de
+     propósito; seleção de texto precisa ser inconfundível, e 16% de matiz
+     mal se distinguiria do fundo. Valores próprios, um por tema. */
+  ::selection {
+    background-color: var(--sel-bg);
+    color: var(--sel-fg);
+  }
+}
+
+@layer components {
+  /* Carrossel automático (marquee) — usado por <Marquee /> */
+  .animate-marquee {
+    animation: ds-marquee var(--marquee-duration, 30s) linear infinite;
+  }
+  .animate-skeleton-pulse {
+    animation: ds-skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @keyframes ds-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Card "premium" — superfície de vidro: fundo translúcido em diagonal, borda
+     chapada de 1px e nenhuma sombra projetada. */
+  .premium-card {
+    @apply relative overflow-hidden rounded-xl border border-hairline;
+    /* CLARO: branco chapado, sem gradiente e sem sombra projetada — a definição
+       vem só da borda de 1px. ESCURO: 100% transparente (ver .dark abaixo). */
+    background-color: rgb(var(--c-surface));
+    box-shadow: none;
+    /* A borda não entra na transição: fica 1px chapada, sem reagir ao hover. */
+    transition: box-shadow 300ms ease, transform 300ms ease;
+  }
+  .premium-card:hover {
+    transform: translateY(-2px);
+  }
+  /* Sem o brilho interno da aresta no escuro: somado à borda ele lia como uma
+     borda dupla de 2px. Fica só a borda real de 1px. */
+  .dark .premium-card {
+    background: transparent;
+    box-shadow: none;
+  }
+  .dark .premium-card:hover {
+    box-shadow: none;
+  }
+
+  /* Cards de plano (.ds-plan-card) — os únicos com destaque extra: fundo um
+     degrau mais claro, aresta de vidro no topo e sombra projetada leve. Os
+     demais cards ficam chapados, só com a borda de 1px. */
+  .ds-plan-card {
+    /* Fundo próprio e OPACO: praticamente branco, como o botão secundário
+       (branco → neutral-50). Nenhuma transparência aqui. */
+    background-image: linear-gradient(
+      135deg,
+      rgb(var(--c-surface)) 0%,
+      rgb(var(--c-canvas)) 100%
+    );
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 8px 30px rgb(23 23 23 / 0.06);
+  }
+  .ds-plan-card:hover {
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 12px 36px rgb(23 23 23 / 0.09);
+  }
+  .dark .ds-plan-card {
+    background-image: radial-gradient(
+        115% 115% at 100% 100%,
+        rgb(16 185 129 / 0.06) 0%,
+        transparent 58%
+      ),
+      linear-gradient(135deg, rgb(var(--c-elevated)) 0%, rgb(var(--c-surface)) 100%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), 0 10px 28px rgb(0 0 0 / 0.3);
+  }
+  .dark .ds-plan-card:hover {
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 14px 36px rgb(0 0 0 / 0.38);
+  }
+
+  /* Luz que segue o cursor. As coordenadas chegam em --spot-x/--spot-y pelo hook
+     `useSpotlight`; sem ele o gradiente fica centralizado e invisível (opacity 0).
+     `pointer-events: none` mantém botões e links dentro do card clicáveis. */
+  .premium-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    background: radial-gradient(
+      260px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(16, 185, 129, 0.14),
+      transparent 68%
+    );
+  }
+  .premium-card:hover::after {
+    opacity: 1;
+  }
+  .dark .premium-card::after {
+    background: radial-gradient(
+      260px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      rgba(16, 185, 129, 0.2),
+      transparent 68%
+    );
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .premium-card::after {
+      transition: none;
+    }
+  }
+
+  /* ── Brilho de borda no hover ──────────────────────────────────────────
+     Anel de 1px desenhado por cima da borda hairline, com um gradiente radial
+     ancorado no cursor (mesmas --spot-x/--spot-y do spotlight). A máscara em
+     `exclude` recorta o miolo e deixa só a moldura — a mesma técnica do hover
+     do botão secundário.
+
+     Sem sombra externa de propósito: o princípio do sistema é definir
+     superfície por contorno, não por elevação. Aqui o contorno é que acende.
+
+     `.premium-card` já ganha o efeito; `.card-glow` é o opt-in para as
+     superfícies flat, que não têm as pseudo-classes do premium. */
+  .premium-card::before,
+  .card-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px; /* espessura do anel */
+    background: radial-gradient(
+      var(--card-glow-size, 220px) circle at var(--spot-x, 50%) var(--spot-y, 50%),
+      var(--card-glow-core),
+      var(--card-glow-edge) 45%,
+      transparent 72%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+  }
+  .premium-card:hover::before,
+  .card-glow:hover::before {
+    opacity: 1;
+  }
+  /* `.card-glow` sozinho não posiciona nada: precisa de contexto para o anel. */
+  .card-glow {
+    position: relative;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .premium-card::before,
+    .card-glow::before {
+      transition: none;
+    }
+  }
+
+  /* Textura de ruído sutil (overlay) */
+  .noise-bg {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+  }
+}
+
+/* ==========================================================================
+   Shiny CTA Button — pílula escura com borda esmeralda giratória (funciona
+   em tema claro e escuro). Uso: <Button variant="shiny">…</Button>
+   ========================================================================== */
+/* `inherits: false` é essencial: o ângulo é animado a 60fps e usado apenas pelo
+   próprio botão. Com herança ligada, todo descendente era re-estilizado a cada
+   frame — o que fazia o WebKit descartar a camada mascarada dos pontos. */
+@property --gradient-angle { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+@property --gradient-angle-offset { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+@property --gradient-shine { syntax: "<color>"; initial-value: #10b981; inherits: true; }
+@property --bg-color-top { syntax: "<color>"; initial-value: #1c2421; inherits: true; }
+@property --bg-color-bottom { syntax: "<color>"; initial-value: #0a0a0a; inherits: true; }
+
+.shiny-cta {
+  --gradient-angle: 0deg;
+  --gradient-angle-offset: 0deg;
+  --gradient-shine: #10b981;
+  --bg-color-top: #1c2421;
+  --bg-color-bottom: #0a0a0a;
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+  color: #ffffff;
+  background: linear-gradient(var(--bg-color-top), var(--bg-color-bottom)) padding-box,
+    conic-gradient(
+        from calc(var(--gradient-angle) - var(--gradient-angle-offset)),
+        transparent 0%, #047857 5%, var(--gradient-shine) 15%, #047857 30%, transparent 40%, transparent 100%
+      )
+      border-box;
+  border: 1px solid transparent;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), inset 0 -2px 6px rgba(0, 0, 0, 0.2),
+    0 12px 24px -8px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 300ms ease, transform 300ms ease;
+  isolation: isolate;
+  z-index: 1;
+  animation: border-spin 2.5s linear infinite;
+}
+
+@keyframes border-spin {
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+.shiny-cta:hover {
+  --bg-color-top: #232e29;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25), inset 0 -2px 6px rgba(0, 0, 0, 0.25),
+    0 16px 32px -8px rgba(16, 185, 129, 0.6);
+}
+.shiny-cta:active {
+  transform: translateY(1px);
+}
+
+
+
+  /* (removido) O "sweep" lateral deixava uma linha dura passando de um lado ao
+     outro. Mantemos só a borda esmeralda giratória + os pontos localizados. */
+
+/* Pontilhado discreto — detalhe concentrado no canto inferior esquerdo. A
+   máscara radial dissolve a grade nas bordas, então não existe corte visível.
+   Depende do `inherits: false` nos @property acima para não ser re-rasterizado
+   a cada frame da animação da borda. */
+.shiny-dots {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  /* Grade de 4px — a densidade original do efeito (o commit que os trouxe de
+     volta havia afrouxado para 5px). */
+  background-size: 4px 4px;
+  /* Faixa diagonal: nasce logo depois do meio e se dissolve antes da borda. */
+  --dots-mask: linear-gradient(
+    125deg,
+    transparent 54%,
+    rgba(0, 0, 0, 0.85) 66%,
+    rgba(0, 0, 0, 0.85) 74%,
+    transparent 85%
+  );
+  -webkit-mask-image: var(--dots-mask);
+  mask-image: var(--dots-mask);
+}
+
+/* O centro é 0.5px, não 1px. Centrar em `1px` coloca o ponto
+   exatamente na quina entre quatro pixels: um círculo de raio 0.5px se divide
+   em quatro pedaços de ~20% de cobertura cada e se dissolve — em tela 1x ele
+   some (em 2x sobra resolução e ele aparece, que foi o que mascarou o
+   problema). Em `0.5px` o ponto cai dentro de um pixel só, com ~78% de
+   cobertura: mesmo tamanho, mesma opacidade, agora visível.
+   Não aumente o raio para compensar — engorda o ponto em vez de alinhá-lo. */
+.shiny-cta .shiny-dots {
+  background-image: radial-gradient(circle at 0.5px 0.5px, rgba(16, 185, 129, 0.5) 0.5px, transparent 0);
+}
+
+.shiny-brand .shiny-dots {
+  background-image: radial-gradient(circle at 0.5px 0.5px, rgba(255, 255, 255, 0.4) 0.5px, transparent 0);
+}
+
+.shiny-cta-content {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* ==========================================================================
+   Shiny Brand Button — pílula esmeralda com borda branca giratória.
+   Uso: <Button variant="shiny-brand">…</Button>
+   ========================================================================== */
+@property --bg-color-brand-top { syntax: "<color>"; initial-value: #10b981; inherits: true; }
+@property --bg-color-brand-bottom { syntax: "<color>"; initial-value: #047857; inherits: true; }
+@property --gradient-shine-brand { syntax: "<color>"; initial-value: #ffffff; inherits: true; }
+
+.shiny-brand {
+  --gradient-angle: 0deg;
+  --gradient-angle-offset: 0deg;
+  --gradient-shine-brand: #ffffff;
+  --bg-color-brand-top: #10b981;
+  --bg-color-brand-bottom: #047857;
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+  color: #ffffff;
+  background: linear-gradient(var(--bg-color-brand-top), var(--bg-color-brand-bottom)) padding-box,
+    conic-gradient(
+        from calc(var(--gradient-angle) - var(--gradient-angle-offset)),
+        transparent 0%, #047857 5%, var(--gradient-shine-brand) 15%, #047857 30%, transparent 40%, transparent 100%
+      )
+      border-box;
+  border: 1px solid transparent;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.4), inset 0 -2px 6px rgba(0, 0, 0, 0.2),
+    0 12px 24px -8px rgba(16, 185, 129, 0.5);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  isolation: isolate;
+  z-index: 1;
+  animation: border-spin 2.5s linear infinite;
+}
+.shiny-brand:hover {
+  --bg-color-brand-top: #059669;
+  --bg-color-brand-bottom: #065f46;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5), inset 0 -2px 6px rgba(0, 0, 0, 0.25),
+    0 16px 32px -8px rgba(16, 185, 129, 0.6);
+}
+.shiny-brand:active {
+  transform: translateY(1px);
+}
+
+/* (removido) sweep lateral — ver nota no .shiny-cta acima. */
+
+/* Hover do botão secundário: a mesma borda esmeralda giratória do CTA
+   principal, desenhada só no anel (mask exclui o miolo) e revelada por fade.
+   Reusa o keyframe `border-spin` e o @property --gradient-angle do shiny. */
+.ds-btn-secondary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px; /* espessura do anel */
+  background: conic-gradient(
+    from var(--gradient-angle),
+    transparent 0%, #047857 5%, #10b981 15%, #047857 30%, transparent 40%, transparent 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+  animation: border-spin 2.5s linear infinite;
+}
+.ds-btn-secondary:hover::after {
+  opacity: 1;
+}
+
+/* (removido) O selo de ícone com preenchimento escuro e pontos — agora é só um
+   círculo com borda de 1px, montado com utilitários em <FeatureIconCard />. */
+
+/* O CTA shiny permanece PRETO no tema escuro — a borda esmeralda giratória
+   dá visibilidade e ele contrasta bem com o secundário traçado (transparente). */
+
+/* ==========================================================================
+   Plano em destaque — mantém a leve escala de forma persistente (o hover do
+   premium-card não pode encolher o card). Fora de @layer para vencer a regra.
+   ========================================================================== */
+@media (min-width: 768px) {
+  .pricing-featured {
+    transform: scale(1.04);
+  }
+  .pricing-featured:hover {
+    transform: translateY(-2px) scale(1.04);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Utilitários próprios do design system. Na v4 utilitários customizados são
+   declarados com @utility (aceitam variantes: hover:, md:, dark:…).
+   ────────────────────────────────────────────────────────────────────────── */
+@utility text-brand-gradient {
+  background-image: linear-gradient(to right, var(--brand-grad-from), var(--brand-grad-to));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility hover-text-shine {
+  background-image: linear-gradient(
+    110deg,
+    var(--brand-grad-from) 0%,
+    var(--brand-grad-to) 40%,
+    var(--color-emerald-200) 50%,
+    var(--brand-grad-to) 60%,
+    var(--brand-grad-from) 100%
+  );
+  background-size: 250% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transition: background-position 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  background-position: 100% center;
+
+  &:hover {
+    background-position: 0% center;
+  }
+}
+
+@utility bg-brand-gradient {
+  background-image: linear-gradient(to right, var(--brand-grad-from), var(--brand-grad-to));
+}
+
+/* Alcança o <svg> descendente para poder ser aplicado num wrapper. Os ícones
+   do Phosphor são desenhados com `fill`, então o gradiente da marca funciona
+   em qualquer um deles — inclusive nos de traço reto, que com o lucide sumiam
+   por terem bounding box degenerada. */
+@utility fill-brand-gradient {
+  fill: url(#brand-gradient);
+
+  & path {
+    fill: url(#brand-gradient);
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Ícones duotone (Phosphor). O peso `duotone` desenha dois paths: primeiro o
+   corpo da forma, marcado com `opacity="0.2"`, depois o contorno. Aqui o corpo
+   assume o acento esmeralda e o contorno segue `currentColor` — ou seja, o
+   traço acompanha o texto (quase preto no claro, quase branco no escuro) e o
+   segundo tom é o verde da marca.
+
+   Funciona tanto aplicado no próprio ícone quanto num wrapper.
+   Ajuste fino por instância com --icon-duotone-accent / --icon-duotone-opacity.
+   ────────────────────────────────────────────────────────────────────────── */
+@utility icon-duotone {
+  & path[opacity] {
+    fill: var(--icon-duotone-accent);
+    opacity: var(--icon-duotone-opacity);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   AGENDADOR — o que o app precisa e a biblioteca ainda não tem (modal, toast).
+   Tudo acima desta linha é o index.css do design system, sem alteração.
+   ───────────────────────────────────────────────────────────────────────── */
+@keyframes ag-surgir {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ag-surgir { animation: ag-surgir 200ms var(--ease-out-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-surgir { animation: none; }
+}
